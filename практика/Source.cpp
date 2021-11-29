@@ -181,3 +181,4 @@ int main()
 }
 //fgdfgdfgdfgdfgd
 //jdfsdkfjsdkgsdjk
+// я с этой хуйней блять 2 часа ебался
