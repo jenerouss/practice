@@ -179,6 +179,3 @@ int main()
 		return 0;
 	}
 }
-//fgdfgdfgdfgdfgd
-//jdfsdkfjsdkgsdjk
-// я с этой хуйней блять 2 часа ебался
