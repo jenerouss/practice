@@ -31,8 +31,8 @@ double fourthstep(double* x, double xt)
 		ox += f(x[i]) - f(xt);
 	}
 	o = pow((1 / (n + 1)) * pow(ox, 2), 0.5);
-	return o;
 	fifthstep(x, xt, A, xh);
+	return o;
 }
 double thirdstep(double* x, double xh)
 {
@@ -42,8 +42,8 @@ double thirdstep(double* x, double xh)
 			xt += x[i];
 	}
 	xt = (1 / n) * xt;
-	return xt;
 	fourthstep(x, xt);
+	return xt;
 }
 double secondstep(double* x)
 {
@@ -81,8 +81,8 @@ double secondstep(double* x)
 			xs = x[i];
 		}
 	}
-	return xl, xh, xs;
 	thirdstep(x, xh);
+	return xl, xh, xs;
 }
 int main()
 {
@@ -112,70 +112,73 @@ int main()
 		while (x[i] == x[i - 1] or x[i] == x[i - 2])
 			x[i] = rand() % 50 + 1;
 		res[i] = f(x[i]);
-		secondstep(x);
-		if (o <= E)
-			cout << "o <= E, следовательно в качестве можно приближенного решения взять наилучшую точку текущего многогранника: " << xl << endl;
-		/// 
-		/// 5
-		///
-		///
-		/// 6
-		///
-		cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
-		if (f(xotr) <= f(xl))
-		{
-			xras = xt + Y * (xotr - xt);
-			cout << "1if" << endl;
-			if (f(xras) < f(xl))
-			{
-				xh = xras;
-				K = K + 1;
-			}
-			else if (f(xras) >= f(xl))
-			{
-				xh = xotr;
-				K = K + 1;
-			}
-		}
-		else if (f(xs) < f(xotr) and f(xotr) <= f(xh))
-		{
-			xsz = xt + B * (xh - xt);
-			cout << "2elseif" << endl;
-			xh = xsz;
-			K = K + 1;
-		}
-		else if (f(xl) < f(xotr) and f(xl) <= f(xs))
-		{
-			xh = xotr;
-			cout << "3elseif" << endl;
-			K = K + 1;
-		}
-		else if (f(xotr) > f(xh))
-		{
-			for (int i = 0; i < n; i++)
-			{
-				x[i] = xl + 0.5 * (x[i] - xl);
-				cout << "4elseif" << endl;
-			}
-			K = K + 1;
-		}
-		for (int i = 0; i < n; i++)
-		{
-			cout << "x = " << x[i] << endl;
-			//cout << "y = " << y[i] << endl;
-			cout << "f(x" << i + 1 << ')' << '=' << res[i] << endl;
-		}
-		cout << "наилучшая: " << xl << endl;
-		cout << "наихудшая: " << xh << endl;
-		cout << "xs = " << xs << endl;
-		cout << "центр тяжести: " << xt << endl;
-		cout << "o = " << o << endl;
-		cout << "отражение: " << f(xotr) << endl;
-		cout << "растяжение: " << f(xras) << endl;
-		cout << "сжатие: " << f(xsz) << endl;
-		delete[] x;
-		delete[] y;
-		delete[] res;
+	}
+	secondstep(x);
+	if (o <= E)
+	{
+		cout << "o <= E, следовательно в качестве можно приближенного" <<
+			"решения взять наилучшую точку текущего многогранника : " << xl << endl;
 		return 0;
 	}
+	cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
+	if (f(xotr) <= f(xl))
+	{
+		xras = xt + Y * (xotr - xt);
+		cout << "1if" << endl;
+		if (f(xras) < f(xl))
+		{
+			xh = xras;
+			K = K + 1;
+			secondstep(x);
+		}
+		else if (f(xras) >= f(xl))
+		{
+			xh = xotr;
+			K = K + 1;
+			secondstep(x);
+		}
+	}
+	else if (f(xs) < f(xotr) and f(xotr) <= f(xh))
+	{
+		xsz = xt + B * (xh - xt);
+		cout << "2elseif" << endl;
+		xh = xsz;
+		K = K + 1;
+		secondstep(x);
+	}
+	else if (f(xl) < f(xotr) and f(xl) <= f(xs))
+	{
+		xh = xotr;
+		cout << "3elseif" << endl;
+		K = K + 1;
+		secondstep(x);
+	}
+	else if (f(xotr) > f(xh))
+	{
+		for (int i = 0; i < n; i++)
+		{
+			x[i] = xl + 0.5 * (x[i] - xl);
+			cout << "4elseif" << endl;
+		}
+		K = K + 1;
+		secondstep(x);
+	}
+	for (int i = 0; i < n; i++)
+	{
+		cout << "x = " << x[i] << endl;
+		//cout << "y = " << y[i] << endl;
+		cout << "f(x" << i + 1 << ')' << '=' << res[i] << endl;
+	}
+	cout << "наилучшая: " << xl << endl;
+	cout << "наихудшая: " << xh << endl;
+	cout << "xs = " << xs << endl;
+	cout << "центр тяжести: " << xt << endl;
+	cout << "o = " << o << endl;
+	cout << "отражение: " << f(xotr) << endl;
+	cout << "растяжение: " << f(xras) << endl;
+	cout << "сжатие: " << f(xsz) << endl;
+	delete[] x;
+	delete[] y;
+	delete[] res;
+	return 0;
 }
