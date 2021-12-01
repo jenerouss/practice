@@ -22,26 +22,31 @@ double f(double x)
 double fifthstep(double* x, double xt, double A, double xh)
 {
 	xotr = xt + A * (xt - xh);
+	cout << "5func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
 	return xotr;
 }
 double fourthstep(double* x, double xt)
 {
+	ox = 0;
 	for (int i = 0; i < n; i++)
 	{
 		ox += f(x[i]) - f(xt);
 	}
 	o = pow((1 / (n + 1)) * pow(ox, 2), 0.5);
+	cout << "4func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
 	fifthstep(x, xt, A, xh);
 	return o;
 }
 double thirdstep(double* x, double xh)
 {
+	xt = 0;
 	for (int i = 0; i < n; i++)
 	{
 		if (x[i] != xh)
 			xt += x[i];
 	}
 	xt = (1 / n) * xt;
+	cout << "3func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
 	fourthstep(x, xt);
 	return xt;
 }
@@ -81,6 +86,7 @@ double secondstep(double* x)
 			xs = x[i];
 		}
 	}
+	cout << "2func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
 	thirdstep(x, xh);
 	return xl, xh, xs;
 }
@@ -114,6 +120,69 @@ int main()
 		res[i] = f(x[i]);
 	}
 	secondstep(x);
+	//while (o > E)
+	for (int i = 0; i< 100; i++)
+	{
+		cout << "o = " << o << endl;
+		if (f(xotr) <= f(xl))
+		{
+			xras = xt + Y * (xotr - xt);
+			cout << "1if" << endl;
+			if (f(xras) < f(xl))
+			{
+				for (int j = 0; j < n; j++)
+				{
+					if (x[j] == xh)
+						x[j] = xras;
+				}
+				K = K + 1;
+				secondstep(x);
+			}
+			else if (f(xras) >= f(xl))
+			{
+				for (int j = 0; j < n; j++)
+				{
+					if (x[j] == xh)
+						x[j] = xotr;
+				}
+				K = K + 1;
+				secondstep(x);
+			}
+		}
+		else if (f(xs) < f(xotr) and f(xotr) <= f(xh))
+		{
+			xsz = xt + B * (xh - xt);
+			cout << "2elseif" << endl;
+			for (int j = 0; j < n; j++)
+			{
+				if (x[j] == xh)
+					x[j] = xsz;
+			}
+			K = K + 1;
+			secondstep(x);
+		}
+		else if (f(xl) < f(xotr) and f(xl) <= f(xs))
+		{
+			for (int j = 0; j < n; j++)
+			{
+				if (x[j] == xh)
+					x[j] = xotr;
+			}
+			cout << "3elseif" << endl;
+			K = K + 1;
+			secondstep(x);
+		}
+		else if (f(xotr) > f(xh))
+		{
+			for (int i = 0; i < n; i++)
+			{
+				x[i] = xl + 0.5 * (x[i] - xl);
+			}
+			cout << "4elseif" << endl;
+			K = K + 1;
+			secondstep(x);
+		}
+	}
 	if (o <= E)
 	{
 		cout << "o <= E, следовательно в качестве можно приближенного" <<
@@ -121,48 +190,7 @@ int main()
 		return 0;
 	}
 	cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
-	if (f(xotr) <= f(xl))
-	{
-		xras = xt + Y * (xotr - xt);
-		cout << "1if" << endl;
-		if (f(xras) < f(xl))
-		{
-			xh = xras;
-			K = K + 1;
-			secondstep(x);
-		}
-		else if (f(xras) >= f(xl))
-		{
-			xh = xotr;
-			K = K + 1;
-			secondstep(x);
-		}
-	}
-	else if (f(xs) < f(xotr) and f(xotr) <= f(xh))
-	{
-		xsz = xt + B * (xh - xt);
-		cout << "2elseif" << endl;
-		xh = xsz;
-		K = K + 1;
-		secondstep(x);
-	}
-	else if (f(xl) < f(xotr) and f(xl) <= f(xs))
-	{
-		xh = xotr;
-		cout << "3elseif" << endl;
-		K = K + 1;
-		secondstep(x);
-	}
-	else if (f(xotr) > f(xh))
-	{
-		for (int i = 0; i < n; i++)
-		{
-			x[i] = xl + 0.5 * (x[i] - xl);
-			cout << "4elseif" << endl;
-		}
-		K = K + 1;
-		secondstep(x);
-	}
+	
 	for (int i = 0; i < n; i++)
 	{
 		cout << "x = " << x[i] << endl;
