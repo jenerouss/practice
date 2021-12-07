@@ -9,109 +9,150 @@ using std::sin;
 using std::cos;
 using std::fabs;
 const double n = 2;
-const double nr = n + 1;
-double A = 1, B = 0.5, Y = 2, E = 0.2, K = 0;
-double xl, xh, xt;
-double xs = 0;
-double o;
-double ox = 0;
-double xotr;
-double f(double x)
+const double nx = n + 1;
+const double ny = 2;
+bool vivod = true;
+double f(double* x)
 {
-	return pow(x, 2);
+	double* d = new double[ny];
+	for (int j = 0; j < nx; j++)
+	{
+		d[j] = x[j];
+	}
+	return (pow(d[0], 2) + pow(d[1],2));
 }
-double fifthstep(double* x, double xt, double A, double xh)
+/*double fifthstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt)
 {
 	xotr = xt + A * (xt - xh);
-	cout << "5func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
-	for (int i = 0; i < nr; i++)
+	if (vivod)
 	{
-		cout << "5func)" << "x" << "[" << i << "] = " << x[i] << endl;
+		cout << "5func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
+		for (int i = 0; i < nx; i++)
+		{
+			cout << "5func)" << "x" << "[" << i << "] = " << x[i] << endl;
+		}
 	}
 	return xotr;
 }
-double fourthstep(double* x, double xt)
+double fourthstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt)
 {
 	ox = 0;
-	for (int i = 0; i < nr; i++)
+	for (int i = 0; i < nx; i++)
 	{
 		ox += f(x[i]) - f(xt);
 	}
 	o = pow((1 / (n + 1)) * pow(ox, 2), 0.5);
 	if (o <= E)
 	{
-		cout << "o <= E, следовательно в качестве можно приближенного" <<
+		cout << "o (" << o << ") <= E (" << E << "), следовательно в качестве можно приближенного" <<
 			"решения взять наилучшую точку текущего многогранника : " << xl << endl;
 		return 0;
 	}
-	cout << "4func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
-	for (int i = 0; i < nr; i++)
+	if (vivod)
 	{
-		cout << "4func)" << "x" << "[" << i << "] = " << x[i] << endl;
+		cout << "4func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
+		for (int i = 0; i < nx; i++)
+		{
+			cout << "4func)" << "x" << "[" << i << "] = " << x[i] << endl;
+		}
 	}
 	fifthstep(x, xt, A, xh);
 	return o;
-}
-double thirdstep(double* x, double xh)
+}*/
+double* thirdstep(double** x, double* res, double* xl, double* xh, double* xs, double* xt)
 {
-	xt = 0;
-	for (int i = 0; i < nr; i++)
+	double* sum = new double[ny];
+	for (int i = 0; i < nx; i++)
 	{
-		if (x[i] != xh)
-			xt += x[i];
+		for (int j = 0; j < ny; j++)
+		{
+			if (x[i] != xh)
+			{
+				cout << "if " << x[i][j] << endl;
+				sum[i] += x[i][j];
+				cout << sum[i] << endl;
+			}
+		}
+		xt[i] = (1 / n) * sum[i];
 	}
-	xt = (1 / n) * xt;
-	cout << "3func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
-	for (int i = 0; i < nr; i++)
+	delete[] sum;
+	if (vivod)
 	{
-		cout << "3func)" << "x" << "[" << i << "] = " << x[i] << endl;
+		for (int i = 0; i < nx; i++)
+		{
+			for (int j = 0; j < ny; j++)
+			{
+				cout << "3func) x" << "[" << i << "]"
+					<< " = (" << x[i][j] << ";" << x[i][j + 1] << ")" << endl;
+				j++;
+			}
+			cout << "3func) res" << "[" << i << "]"
+				<< " = " << res[i] << endl;
+		}
+		for (int i = 0; i < ny; i++)
+		{
+			cout << "3func) " << "xh = (" << xh[i] << ";" << xh[i + 1] << ") "
+				<< "xs = (" << xs[i] << ";" << xs[i + 1] << ") "
+				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ") "
+				<< "xt = (" << xt[i] << ";" << xt[i + 1] << ")"
+				<< endl;
+			i++;
+		}
 	}
-	fourthstep(x, xt);
+	//fourthstep(x, xt);
 	return xt;
 }
-double secondstep(double* x)
+double* secondstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt)
 {
-	for (int i = 0; i < nr; i++)
+	for (int i = 0; i < nx; i++)
 	{
 		if (i >= 1)
 		{
-			if (min(x[i], x[i - 1]) < xl)
+			if (min(res[i], res[i - 1]) < f(xl))
 			{
-				xl = min(x[i], x[i - 1]);
-				//xlx = x[i];
-				//xly = y[i];
+				xl = x[i];
 			}
-			if (max(x[i], x[i - 1]) > xh)
+			if (max(res[i], res[i - 1]) > f(xh))
 			{
-				xh = max(x[i], x[i - 1]);
-				//xhx = x[i];
-				//xhy = y[i];
+				xh = x[i];
 			}
 		}
 		else
 		{
 			xl = x[i];
-			//xlx = x[i];
-			//xly = y[i];
 			xh = x[i];
-			//xhx = x[i];
-			//xhy = y[i];
 		}
+		xs = x[i];
 	}
-	xs = 0;
-	for (int i = 0; i < nr; i++)
+	for (int i = 0; i < nx; i++)
 	{
-		if (x[i] > xl and x[i] < xh and x[i] > xs)
+		if (res[i] > f(xl) and res[i] < f(xh) and res[i] > xs[i])
 		{
 			xs = x[i];
 		}
 	}
-	cout << "2func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
-	for (int i = 0; i < nr; i++)
+	if (vivod)
 	{
-		cout << "2func)" << "x" << "[" << i << "] = " << x[i] << endl;
+		for (int i = 0; i < nx; i++)
+		{
+			for (int j = 0; j < ny; j++)
+			{
+				cout << "2func) x" << "[" << i << "]"
+					<< " = (" << x[i][j] << ";" << x[i][j + 1] << ")" << endl;
+				j++;
+			}
+			cout << "2func) res" << "[" << i << "]"
+				<< " = " << res[i] << endl;
+		}
+		for (int i = 0; i < ny; i++)
+		{
+			cout << "2func) " << "xh = (" << xh[i] << ";" << xh[i+1] << ") " 
+				<< "xs = (" << xs[i] << ";" << xs[i + 1] << ") "
+				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ")" << endl;
+			i++;
+		}
 	}
-	thirdstep(x, xh);
+	thirdstep(x, res, xl, xh, xs, xt);
 	return xl, xh, xs;
 }
 int main()
@@ -121,44 +162,59 @@ int main()
 	//cout << "Число Эпсилон(точность метода) Epsilon > 0 : ";
 	//cin >> E;
 	double xsz = 0;
-	double xras = 0; // растяжение
-	double* res = new double[nr];
-	double* x = new double[nr];
-	double* y = new double[nr];
-	for (int i = 0; i < nr; i++)
+	double xras = 0;
+	double A = 1, B = 0.5, Y = 2, E = 0.2, K = 0;
+	double o;
+	double ox = 0;
+	double* res = new double[nx];
+	double* xl = new double[ny];
+	double* xh = new double[ny];
+	double* xt = new double[ny];
+	double* xs = new double[ny];
+	double* xotr = new double[ny];
+	double** x;
+	x = new double* [nx];
+	for (int i = 0; i < nx; i++) 
 	{
-		x[i] = rand() % 50 + 1;
-		y[i] = rand() % 50 + 1;
-		while (x[i] == y[i])
-		{
-			y[i] = rand() % 50 + 1;
-		}
-		if (x[i] > y[i])
-		{
-			double h = x[i];
-			x[i] = y[i];
-			y[i] = h;
-		}
-		while (x[i] == x[i - 1] or x[i] == x[i - 2])
-			x[i] = rand() % 50 + 1;
-		res[i] = f(x[i]);
+		x[i] = new double[ny];
 	}
-	for (int i = 0; i < nr; i++)
+	for (int i = 0; i < nx; i++)
 	{
-		cout << "x" << "[" << i << "] = " << x[i] << endl;
+		for (int j = 0; j < ny; j++)
+		{
+			x[i][j] = rand() % 50 + 1;
+			while (x[i][j] == x[i][j - 1])
+			{
+				x[i][j] = rand() % 50 + 1;
+			}
+			res[i] = f(x[i]);
+		}
 	}
-	secondstep(x);
-	while (o > E)
-	//for (int i = 0; i < 10; i++)
+	if (vivod)
 	{
-		cout << "o = " << o << endl;
+		for (int i = 0; i < nx; i++)
+		{
+			for (int j = 0; j < ny; j++)
+			{
+				cout << "x" << "[" << i << "]" << " = (" << x[i][j] << ";" << x[i][j+1] << ")" << endl;
+				j++;
+			}
+			cout << "res" << "[" << i << "]" << " = " << res[i] << endl;
+		}
+	}
+	secondstep(x,res,xl,xh,xs,xt);
+	/*while (o > E)
+	{
+		if (vivod)
+			cout << "o = " << o << endl;
 		if (f(xotr) <= f(xl))
 		{
 			xras = xt + Y * (xotr - xt);
-			cout << "1if" << endl;
+			if (vivod)
+				cout << "1if" << endl;
 			if (f(xras) < f(xl))
 			{
-				for (int j = 0; j < nr; j++)
+				for (int j = 0; j < nx; j++)
 				{
 					if (x[j] == xh)
 						x[j] = xras;
@@ -168,7 +224,7 @@ int main()
 			}
 			else if (f(xras) >= f(xl))
 			{
-				for (int j = 0; j < nr; j++)
+				for (int j = 0; j < nx; j++)
 				{
 					if (x[j] == xh)
 						x[j] = xotr;
@@ -180,8 +236,9 @@ int main()
 		else if (f(xs) < f(xotr) and f(xotr) <= f(xh))
 		{
 			xsz = xt + B * (xh - xt);
-			cout << "2elseif" << endl;
-			for (int j = 0; j < nr; j++)
+			if (vivod)
+				cout << "2elseif" << endl;
+			for (int j = 0; j < nx; j++)
 			{
 				if (x[j] == xh)
 					x[j] = xsz;
@@ -191,28 +248,32 @@ int main()
 		}
 		else if (f(xl) < f(xotr) and f(xl) <= f(xs))
 		{
-			for (int j = 0; j < nr; j++)
+			for (int j = 0; j < nx; j++)
 			{
 				if (x[j] == xh)
 					x[j] = xotr;
 			}
-			cout << "3elseif" << endl;
+			if (vivod)
+				cout << "3elseif" << endl;
 			K = K + 1;
 			secondstep(x);
 		}
 		else if (f(xotr) > f(xh))
 		{
-			for (int i = 0; i < nr; i++)
+			for (int i = 0; i < nx; i++)
 			{
 				x[i] = xl + 0.5 * (x[i] - xl);
 			}
-			cout << "4elseif" << endl;
+			if (vivod)
+				cout << "4elseif" << endl;
 			K = K + 1;
 			secondstep(x);
 		}
 	}
-	cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
-	for (int i = 0; i < nr; i++)
+	if (vivod)
+	{
+		cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
+	for (int i = 0; i < nx; i++)
 	{
 		cout << "x = " << x[i] << endl;
 		//cout << "y = " << y[i] << endl;
@@ -226,8 +287,17 @@ int main()
 	cout << "отражение: " << f(xotr) << endl;
 	cout << "растяжение: " << f(xras) << endl;
 	cout << "сжатие: " << f(xsz) << endl;
+	}*/
+	for (int i = 0; i < nx; i++)
+	{
+		delete[] x[i];
+	}
 	delete[] x;
-	delete[] y;
 	delete[] res;
+	delete[] xl;
+	delete[] xh;
+	delete[] xt;
+	delete[] xs;
+	delete[] xotr;
 	return 0;
 }
