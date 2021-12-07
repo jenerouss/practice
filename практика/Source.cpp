@@ -61,7 +61,7 @@ double fourthstep(double** x,double* res,double* xl, double* xh, double* xs, dou
 }*/
 double* thirdstep(double** x, double* res, double* xl, double* xh, double* xs, double* xt)
 {
-	double* sum = new double[ny];
+	double* sum = new double[ny] {};
 	for (int i = 0; i < nx; i++)
 	{
 		for (int j = 0; j < ny; j++)
