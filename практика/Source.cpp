@@ -11,6 +11,8 @@ using std::fabs;
 const double n = 2;
 const double nx = n + 1;
 const double ny = 2;
+const double sx = 5;
+const double sy = 2;
 bool vivod = true;
 double f(double* x)
 {
@@ -21,20 +23,42 @@ double f(double* x)
 	}
 	return (pow(d[0], 2) + pow(d[1],2));
 }
-/*double fifthstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt)
+double* fifthstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt,double ox, double o, double E, double A, double* xotr, double* xsz, double* xras)
 {
-	xotr = xt + A * (xt - xh);
+	for (int i = 0; i < ny; i++)
+	{
+		xotr[i] = xt[i] + A * (xt[i] - xh[i]);
+	}
 	if (vivod)
 	{
-		cout << "5func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
 		for (int i = 0; i < nx; i++)
 		{
-			cout << "5func)" << "x" << "[" << i << "] = " << x[i] << endl;
+			for (int j = 0; j < ny; j++)
+			{
+				cout << "5func) x" << "[" << i << "]"
+					<< " = (" << x[i][j] << ";" << x[i][j + 1] << ")" << endl;
+				j++;
+			}
+			cout << "5func) res" << "[" << i << "]"
+				<< " = " << res[i] << endl;
+		}
+		for (int i = 0; i < ny; i++)
+		{
+			cout << "5func) " << "xh = (" << xh[i] << ";" << xh[i + 1] << ") "
+				<< "xs = (" << xs[i] << ";" << xs[i + 1] << ") "
+				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ") "
+				<< "xt = (" << xt[i] << ";" << xt[i + 1] << ") "
+				<< " ox = (" << ox << ") "
+				<< " o = (" << o << ") "
+				<< " xsz = (" << xsz[i] << ";" << xsz[i + 1] << ") "
+				<< " xras = (" << xras[i] << ";" << xras[i + 1] << ")"
+				<< endl;
+			i++;
 		}
 	}
 	return xotr;
 }
-double fourthstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt)
+double** fourthstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt,double ox, double o, double E, double A, double* xotr, double* xsz, double* xras, double** saver)
 {
 	ox = 0;
 	for (int i = 0; i < nx; i++)
@@ -45,34 +69,77 @@ double fourthstep(double** x,double* res,double* xl, double* xh, double* xs, dou
 	if (o <= E)
 	{
 		cout << "o (" << o << ") <= E (" << E << "), следовательно в качестве можно приближенного" <<
-			"решени€ вз€ть наилучшую точку текущего многогранника : " << xl << endl;
+			"решени€ вз€ть наилучшую точку текущего многогранника : ";
+		for (int i = 0; i < ny; i++)
+		{
+			cout << "(" << xl[i] << ";" << xl[i + 1] << ")";
+			i++;
+		}
 		return 0;
+	}
+	else
+	{
+		cout << "o (" << o << ") > E (" << E << "), следовательно процесс поиска продолжаетс€." << endl;
 	}
 	if (vivod)
 	{
-		cout << "4func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
 		for (int i = 0; i < nx; i++)
 		{
-			cout << "4func)" << "x" << "[" << i << "] = " << x[i] << endl;
+			for (int j = 0; j < ny; j++)
+			{
+				cout << "4func) x" << "[" << i << "]"
+					<< " = (" << x[i][j] << ";" << x[i][j + 1] << ")" << endl;
+				j++;
+			}
+			cout << "4func) res" << "[" << i << "]"
+				<< " = " << res[i] << endl;
+		}
+		for (int i = 0; i < ny; i++)
+		{
+			cout << "4func) " << "xh = (" << xh[i] << ";" << xh[i + 1] << ") "
+				<< "xs = (" << xs[i] << ";" << xs[i + 1] << ") "
+				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ") "
+				<< "xt = (" << xt[i] << ";" << xt[i + 1] << ") "
+				<< " ox = (" << ox << ") "
+				<< " o = (" << o << ") "
+				<< " xsz = (" << xsz[i] << ";" << xsz[i + 1] << ") "
+				<< " xras = (" << xras[i] << ";" << xras[i + 1] << ")"
+				<< endl;
+			i++;
 		}
 	}
-	fifthstep(x, xt, A, xh);
-	return o;
-}*/
-double* thirdstep(double** x, double* res, double* xl, double* xh, double* xs, double* xt)
+	for (int i = 0; i < sx-5; i++)
+	{
+		for (int j = 0; j < sy; j++)
+		{
+			saver[i][j] = o;
+		}
+	}
+	fifthstep(x, res, xl, xh, xs, xt, ox, o, E, A, xotr, xsz, xras);
+	return saver;
+}
+double** thirdstep(double** x, double* res, double* xl, double* xh, double* xs, double* xt, double ox, double o, double E, double A, double* xotr, double* xsz, double* xras, double** saver)
 {
 	double* sum = new double[ny] {};
+	int k = 0;
 	for (int i = 0; i < nx; i++)
 	{
 		for (int j = 0; j < ny; j++)
 		{
 			if (x[i] != xh)
 			{
-				cout << "if " << x[i][j] << endl;
-				sum[i] += x[i][j];
-				cout << sum[i] << endl;
+				sum[k] += x[i][j];
 			}
 		}
+		if (x[i] != xh)
+		{
+			k++;
+			if (k >= ny)
+				k--;
+		}
+	}
+	for (int i = 0; i < ny; i++)
+	{
 		xt[i] = (1 / n) * sum[i];
 	}
 	delete[] sum;
@@ -94,15 +161,26 @@ double* thirdstep(double** x, double* res, double* xl, double* xh, double* xs, d
 			cout << "3func) " << "xh = (" << xh[i] << ";" << xh[i + 1] << ") "
 				<< "xs = (" << xs[i] << ";" << xs[i + 1] << ") "
 				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ") "
-				<< "xt = (" << xt[i] << ";" << xt[i + 1] << ")"
+				<< "xt = (" << xt[i] << ";" << xt[i + 1] << ") "
+				<< " ox = (" << ox << ") "
+				<< " o = (" << o << ") "
+				<< " xsz = (" << xsz[i] << ";" << xsz[i + 1] << ") "
+				<< " xras = (" << xras[i] << ";" << xras[i + 1] << ")"
 				<< endl;
 			i++;
 		}
 	}
-	//fourthstep(x, xt);
-	return xt;
+	for (int i = 1; i < sx-4; i++)
+	{
+		for (int j = 0; j < sy; j++)
+		{
+			saver[i][j] = xt[j];
+		}
+	}
+	fourthstep(x, res, xl, xh, xs, xt, ox, o, E, A, xotr, xsz, xras, saver);
+	return saver;
 }
-double* secondstep(double** x,double* res,double* xl, double* xh, double* xs, double* xt)
+double** secondstep(double** x, double* res, double* xl, double* xh, double* xs, double* xt, double ox, double o, double E, double A, double* xotr, double *xsz, double* xras, double** saver)
 {
 	for (int i = 0; i < nx; i++)
 	{
@@ -148,12 +226,36 @@ double* secondstep(double** x,double* res,double* xl, double* xh, double* xs, do
 		{
 			cout << "2func) " << "xh = (" << xh[i] << ";" << xh[i+1] << ") " 
 				<< "xs = (" << xs[i] << ";" << xs[i + 1] << ") "
-				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ")" << endl;
+				<< "xl = (" << xl[i] << ";" << xl[i + 1] << ") "
+				<< "xt = (" << xt[i] << ";" << xt[i + 1] << ") "
+				<< " ox = (" << ox << ") "
+				<< " o = (" << o << ") "
+				<< " xotr = (" << xotr[i] << ";" << xotr[i + 1] << ") "
+				<< " xsz = (" << xsz[i] << ";" << xsz[i + 1] << ") "
+				<< " xras = (" << xras[i] << ";" << xras[i + 1] << ")"
+				<< endl;
 			i++;
 		}
 	}
-	thirdstep(x, res, xl, xh, xs, xt);
-	return xl, xh, xs;
+	for (int i = 2; i < sx; i++)
+	{
+		for (int j = 0; j < sy; j++)
+		{
+			saver[i][j] = xl[j];
+		}
+		i++;
+		for (int j = 0; j < sy; j++)
+		{
+			saver[i][j] = xh[j];
+		}
+		i++;
+		for (int j = 0; j < sy; j++)
+		{
+			saver[i][j] = xs[j];
+		}
+	}
+	thirdstep(x, res, xl, xh, xs, xt, ox, o, E, A, xotr, xsz, xras, saver);
+	return saver;
 }
 int main()
 {
@@ -161,17 +263,23 @@ int main()
 	srand(time(NULL));
 	//cout << "„исло Ёпсилон(точность метода) Epsilon > 0 : ";
 	//cin >> E;
-	double xsz = 0;
-	double xras = 0;
 	double A = 1, B = 0.5, Y = 2, E = 0.2, K = 0;
-	double o;
 	double ox = 0;
+	double o = 0;
 	double* res = new double[nx];
 	double* xl = new double[ny];
 	double* xh = new double[ny];
-	double* xt = new double[ny];
+	double* xt = new double[ny] {};
 	double* xs = new double[ny];
-	double* xotr = new double[ny];
+	double* xotr = new double[ny] {};
+	double* xras = new double[ny] {};
+	double* xsz = new double[ny] {};
+	double** saver;
+	saver = new double* [sx];
+	for (int i = 0; i < sx; i++)
+	{
+		saver[i] = new double[sy];
+	}
 	double** x;
 	x = new double* [nx];
 	for (int i = 0; i < nx; i++) 
@@ -202,75 +310,116 @@ int main()
 			cout << "res" << "[" << i << "]" << " = " << res[i] << endl;
 		}
 	}
-	secondstep(x,res,xl,xh,xs,xt);
-	/*while (o > E)
+	saver = secondstep(x,res,xl,xh,xs,xt,o,ox,E,A,xotr,xsz,xras,saver);
+	for (int i = 0; i < sx; i++)
+	{
+		for (int j = 0; j < sy; j++)
+		{
+			o = saver[i][j];
+		}
+		i++;
+		for (int j = 0; j < sy; j++)
+		{
+			xt[j] = saver[i][j];
+		}
+		i++;
+		for (int j = 0; j < sy; j++)
+		{
+			xl[j] = saver[i][j];
+		}
+		i++;
+		for (int j = 0; j < sy; j++)
+		{
+			xh[j] = saver[i][j];
+		}
+		i++;
+		for (int j = 0; j < sy; j++)
+		{
+			xs[j] = saver[i][j];
+		}
+	}
+	//while (o > E)
+	for (int j = 0; j < 20; j++)
 	{
 		if (vivod)
 			cout << "o = " << o << endl;
 		if (f(xotr) <= f(xl))
 		{
-			xras = xt + Y * (xotr - xt);
 			if (vivod)
 				cout << "1if" << endl;
+			for (int i = 0; i < ny; i++)
+			{
+				xras[i] = xt[i] + Y * (xotr[i] - xt[i]);
+			}
 			if (f(xras) < f(xl))
 			{
-				for (int j = 0; j < nx; j++)
+				if (vivod)
+					cout << "1ifif" << endl;
+				for (int i = 0; i < nx; i++)
 				{
-					if (x[j] == xh)
-						x[j] = xras;
+					if (x[i] == xh)
+						x[i] = xras;
 				}
 				K = K + 1;
-				secondstep(x);
+				secondstep(x, res, xl, xh, xs, xt, o, ox, E, A, xotr, xsz, xras,saver);
 			}
 			else if (f(xras) >= f(xl))
 			{
-				for (int j = 0; j < nx; j++)
+				if (vivod)
+					cout << "1elseif" << endl;
+				for (int i = 0; i < nx; i++)
 				{
-					if (x[j] == xh)
-						x[j] = xotr;
+					if (x[i] == xh)
+						x[i] = xotr;
 				}
 				K = K + 1;
-				secondstep(x);
+				secondstep(x, res, xl, xh, xs, xt, o, ox, E, A, xotr, xsz, xras,saver);
 			}
 		}
 		else if (f(xs) < f(xotr) and f(xotr) <= f(xh))
 		{
-			xsz = xt + B * (xh - xt);
 			if (vivod)
 				cout << "2elseif" << endl;
-			for (int j = 0; j < nx; j++)
+			for (int i = 0; i < ny; i++)
 			{
-				if (x[j] == xh)
-					x[j] = xsz;
+				xsz[i] = xt[i] + B * (xh[i] - xt[i]);
+			}
+			for (int i = 0; i < nx; i++)
+			{
+				if (x[i] == xh)
+					x[i] = xsz;
 			}
 			K = K + 1;
-			secondstep(x);
+			secondstep(x, res, xl, xh, xs, xt, o, ox, E, A, xotr, xsz, xras,saver);
 		}
 		else if (f(xl) < f(xotr) and f(xl) <= f(xs))
 		{
-			for (int j = 0; j < nx; j++)
-			{
-				if (x[j] == xh)
-					x[j] = xotr;
-			}
 			if (vivod)
 				cout << "3elseif" << endl;
+			for (int i = 0; i < nx; i++)
+			{
+				if (x[i] == xh)
+					x[i] = xotr;
+			}
 			K = K + 1;
-			secondstep(x);
+			secondstep(x, res, xl, xh, xs, xt, o, ox, E, A, xotr, xsz, xras,saver);
 		}
 		else if (f(xotr) > f(xh))
 		{
-			for (int i = 0; i < nx; i++)
-			{
-				x[i] = xl + 0.5 * (x[i] - xl);
-			}
 			if (vivod)
 				cout << "4elseif" << endl;
+			for (int i = 0; i < nx; i++)
+			{
+				for (int j = 0; j < ny; j++)
+				{
+					x[i][j] = xl[j] + 0.5 * (x[i][j] - xl[j]);
+				}
+			}
 			K = K + 1;
-			secondstep(x);
+			secondstep(x, res, xl, xh, xs, xt, o, ox, E, A,xotr,xsz, xras,saver);
 		}
 	}
-	if (vivod)
+	/*if (vivod)
 	{
 		cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
 	for (int i = 0; i < nx; i++)
@@ -292,6 +441,11 @@ int main()
 	{
 		delete[] x[i];
 	}
+	for (int i = 0; i < sx; i++)
+	{
+		delete[] saver[i];
+	}
+	delete[] saver;
 	delete[] x;
 	delete[] res;
 	delete[] xl;
@@ -299,5 +453,7 @@ int main()
 	delete[] xt;
 	delete[] xs;
 	delete[] xotr;
+	delete[] xras;
+	delete[] xsz;
 	return 0;
 }
