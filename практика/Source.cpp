@@ -8,7 +8,8 @@ using std::pow;
 using std::sin;
 using std::cos;
 using std::fabs;
-const double n = 3;
+const double n = 2;
+const double nr = n + 1;
 double A = 1, B = 0.5, Y = 2, E = 0.2, K = 0;
 double xl, xh, xt;
 double xs = 0;
@@ -22,37 +23,55 @@ double f(double x)
 double fifthstep(double* x, double xt, double A, double xh)
 {
 	xotr = xt + A * (xt - xh);
-	cout << "5func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
+	cout << "5func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
+	for (int i = 0; i < nr; i++)
+	{
+		cout << "5func)" << "x" << "[" << i << "] = " << x[i] << endl;
+	}
 	return xotr;
 }
 double fourthstep(double* x, double xt)
 {
 	ox = 0;
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < nr; i++)
 	{
 		ox += f(x[i]) - f(xt);
 	}
 	o = pow((1 / (n + 1)) * pow(ox, 2), 0.5);
-	cout << "4func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
+	if (o <= E)
+	{
+		cout << "o <= E, следовательно в качестве можно приближенного" <<
+			"решения взять наилучшую точку текущего многогранника : " << xl << endl;
+		return 0;
+	}
+	cout << "4func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
+	for (int i = 0; i < nr; i++)
+	{
+		cout << "4func)" << "x" << "[" << i << "] = " << x[i] << endl;
+	}
 	fifthstep(x, xt, A, xh);
 	return o;
 }
 double thirdstep(double* x, double xh)
 {
 	xt = 0;
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < nr; i++)
 	{
 		if (x[i] != xh)
 			xt += x[i];
 	}
 	xt = (1 / n) * xt;
-	cout << "3func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
+	cout << "3func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
+	for (int i = 0; i < nr; i++)
+	{
+		cout << "3func)" << "x" << "[" << i << "] = " << x[i] << endl;
+	}
 	fourthstep(x, xt);
 	return xt;
 }
 double secondstep(double* x)
 {
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < nr; i++)
 	{
 		if (i >= 1)
 		{
@@ -79,14 +98,19 @@ double secondstep(double* x)
 			//xhy = y[i];
 		}
 	}
-	for (int i = 0; i < n; i++)
+	xs = 0;
+	for (int i = 0; i < nr; i++)
 	{
 		if (x[i] > xl and x[i] < xh and x[i] > xs)
 		{
 			xs = x[i];
 		}
 	}
-	cout << "2func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << endl;
+	cout << "2func) xt= " << xt << " xh= " << xh << " xotr= " << xotr << " o= " << o << " xs= " << xs << " xl= " << xl << " ox= " << ox << endl;
+	for (int i = 0; i < nr; i++)
+	{
+		cout << "2func)" << "x" << "[" << i << "] = " << x[i] << endl;
+	}
 	thirdstep(x, xh);
 	return xl, xh, xs;
 }
@@ -98,10 +122,10 @@ int main()
 	//cin >> E;
 	double xsz = 0;
 	double xras = 0; // растяжение
-	double* res = new double[n];
-	double* x = new double[n];
-	double* y = new double[n];
-	for (int i = 0; i < n; i++)
+	double* res = new double[nr];
+	double* x = new double[nr];
+	double* y = new double[nr];
+	for (int i = 0; i < nr; i++)
 	{
 		x[i] = rand() % 50 + 1;
 		y[i] = rand() % 50 + 1;
@@ -119,9 +143,13 @@ int main()
 			x[i] = rand() % 50 + 1;
 		res[i] = f(x[i]);
 	}
+	for (int i = 0; i < nr; i++)
+	{
+		cout << "x" << "[" << i << "] = " << x[i] << endl;
+	}
 	secondstep(x);
-	//while (o > E)
-	for (int i = 0; i< 100; i++)
+	while (o > E)
+	//for (int i = 0; i < 10; i++)
 	{
 		cout << "o = " << o << endl;
 		if (f(xotr) <= f(xl))
@@ -130,7 +158,7 @@ int main()
 			cout << "1if" << endl;
 			if (f(xras) < f(xl))
 			{
-				for (int j = 0; j < n; j++)
+				for (int j = 0; j < nr; j++)
 				{
 					if (x[j] == xh)
 						x[j] = xras;
@@ -140,7 +168,7 @@ int main()
 			}
 			else if (f(xras) >= f(xl))
 			{
-				for (int j = 0; j < n; j++)
+				for (int j = 0; j < nr; j++)
 				{
 					if (x[j] == xh)
 						x[j] = xotr;
@@ -153,7 +181,7 @@ int main()
 		{
 			xsz = xt + B * (xh - xt);
 			cout << "2elseif" << endl;
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < nr; j++)
 			{
 				if (x[j] == xh)
 					x[j] = xsz;
@@ -163,7 +191,7 @@ int main()
 		}
 		else if (f(xl) < f(xotr) and f(xl) <= f(xs))
 		{
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < nr; j++)
 			{
 				if (x[j] == xh)
 					x[j] = xotr;
@@ -174,7 +202,7 @@ int main()
 		}
 		else if (f(xotr) > f(xh))
 		{
-			for (int i = 0; i < n; i++)
+			for (int i = 0; i < nr; i++)
 			{
 				x[i] = xl + 0.5 * (x[i] - xl);
 			}
@@ -183,15 +211,8 @@ int main()
 			secondstep(x);
 		}
 	}
-	if (o <= E)
-	{
-		cout << "o <= E, следовательно в качестве можно приближенного" <<
-			"решения взять наилучшую точку текущего многогранника : " << xl << endl;
-		return 0;
-	}
 	cout << "r(xs)= " << f(xs) << endl << "r(xotr)= " << f(xotr) << endl << "r(xh)= " << f(xh) << endl << "r(xl)= " << f(xl) << endl;
-	
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < nr; i++)
 	{
 		cout << "x = " << x[i] << endl;
 		//cout << "y = " << y[i] << endl;
