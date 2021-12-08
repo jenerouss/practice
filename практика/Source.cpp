@@ -187,6 +187,13 @@ double** secondstep(double** x, double* res, double* xl, double* xh, double* xs,
 {
 	for (int i = 0; i < nx; i++)
 	{
+		for (int j = 0; j < ny; j++)
+		{
+			res[i] = f(x[i]);
+		}
+	}
+	for (int i = 0; i < nx; i++)
+	{
 		if (i >= 1)
 		{
 			if (min(res[i], res[i - 1]) < f(xl))
@@ -279,12 +286,12 @@ int main()
 	double* xsz = new double[ny] {};
 	double** saver;
 	saver = new double* [sx];
+	double** x;
+	x = new double* [nx];
 	for (int i = 0; i < sx; i++)
 	{
 		saver[i] = new double[sy];
 	}
-	double** x;
-	x = new double* [nx];
 	for (int i = 0; i < nx; i++) 
 	{
 		x[i] = new double[ny];
@@ -318,7 +325,7 @@ int main()
 	{
 		for (int j = 0; j < sy; j++)
 		{
-			xl[i] = saver[i][j];
+			xl[j] = saver[i][j];
 		}
 		i++;
 		for (int j = 0; j < sy; j++)
@@ -348,7 +355,7 @@ int main()
 		{
 			for (int j = 0; j < sy; j++)
 			{
-				xl[i] = saver[i][j];
+				xl[j] = saver[i][j];
 			}
 			i++;
 			for (int j = 0; j < sy; j++)
@@ -366,7 +373,7 @@ int main()
 				xt[j] = saver[i][j];
 			}
 			i++;
-			for (int j = 0; j < sy; j++)
+			for (int j = 0; j < sy-1; j++)
 			{
 				o = saver[i][j];
 			}
@@ -401,8 +408,10 @@ int main()
 					cout << "1elseif" << endl;
 				for (int i = 0; i < nx; i++)
 				{
-					if (x[i] == xh)
+					if (*x[i] == *xh)
+					{
 						x[i] = xotr;
+					}
 				}
 				K = K + 1;
 				secondstep(x, res, xl, xh, xs, xt, o, ox, E, A, xotr, xsz, xras,saver);
@@ -418,7 +427,7 @@ int main()
 			}
 			for (int i = 0; i < nx; i++)
 			{
-				if (x[i] == xh)
+				if (*x[i] == *xh)
 					x[i] = xsz;
 			}
 			K = K + 1;
@@ -430,7 +439,7 @@ int main()
 				cout << "3elseif" << endl;
 			for (int i = 0; i < nx; i++)
 			{
-				if (x[i] == xh)
+				if (*x[i] == *xh)
 					x[i] = xotr;
 			}
 			K = K + 1;
@@ -451,16 +460,6 @@ int main()
 			secondstep(x, res, xl, xh, xs, xt, o, ox, E, A,xotr,xsz, xras,saver);
 		}
 	}
-	for (int i = 0; i < nx; i++)
-	{
-		delete[] x[i];
-	}
-	for (int i = 0; i < sx; i++)
-	{
-		delete[] saver[i];
-	}
-	delete[] saver;
-	delete[] x;
 	delete[] res;
 	delete[] xl;
 	delete[] xh;
@@ -469,5 +468,15 @@ int main()
 	delete[] xotr;
 	delete[] xras;
 	delete[] xsz;
+	for (int i = 0; i < nx; i++)
+	{
+		delete[] x[i];
+	}
+	delete[] x;
+	for (int i = 0; i < sx; i++)
+	{
+		delete[] saver[i];
+	}
+	delete[] saver;
 	return 0;
 }
